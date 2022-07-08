@@ -7,30 +7,30 @@ function findBookById(books, id) {
 }
 
 function partitionBooksByBorrowedStatus(books) {
-  //at least one of books is false
-  //The filter() method creates a new array with all elements that pass the test implemented by the provided function.
   let borrowed = (booksBorrowed = books.filter((book) =>
-    //the some() method tests whether at least one element in the array passes the test implemented by the provided function. It returns true if, in the array, it finds an element for which the provided function returns true; otherwise it returns false. It doesn't modify the array.
+    //Use the some method because I need borrow.returned to === false just once
     book.borrows.some((borrow) => borrow.returned === false)
   ));
-  //every one of these return values is true
-  //The every() method tests whether all elements in the array pass the test implemented by the provided function. It returns a Boolean value.
   let returned = (booksBorrowed = books.filter((book) =>
+    //I used .every method for this because ALL borrow.returned has to === true for it to truly be returned
     book.borrows.every((borrow) => borrow.returned === true)
   ));
+  //spread operator utilized to easily put all contents in this array
   let result = [[...borrowed], [...returned]];
   return result;
 }
 
 function getBorrowersForBook({ borrows }, accounts) {
+  //I destructured the book parameter to easily utilize just borrows array
   return (
     borrows
-      //The map() method creates a new array populated with the results of calling a provided function on every element in the calling array.
+      //The .map method will iterate through each element of borrows array
       .map((borrow) => {
-        // The find() method returns the first element in the provided array that satisfies the provided testing function. If no values satisfy the testing function, undefined is returned
+        // The .find method only needs to find the first match
         const account = accounts.find((account) => account.id === borrow.id);
         return { ...account, ...borrow };
       })
+      //The .slice method will start at 0 index and stop before index 10
       .slice(0, 10)
   );
 }

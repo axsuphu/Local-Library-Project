@@ -1,7 +1,6 @@
 function getTotalBooksCount(books) {
   return books.length;
 }
-//should return the total number of books in the array:
 
 function getTotalAccountsCount(accounts) {
   return accounts.length;
@@ -9,54 +8,48 @@ function getTotalAccountsCount(accounts) {
 
 function getBooksBorrowedCount(books) {
   return (booksBorrowed = books.filter((book) =>
+    //I needed to filter through the books array to then find if anywhere in borrows that borrow.returned === false
     book.borrows.find((borrow) => borrow.returned === false)
-  ).length);
+  ).length); //I used the .length to give return only the length of the array of my results
 }
 
 function getMostCommonGenres(books) {
-  //have a constant result where we use reduce to accumulate all the genres and their counts
-  ////Definition: The reduce() method executes a user-supplied "reducer" callback function on each element of the array, in order, passing in the return value from the calculation on the preceding element. The final result of running the reducer across all elements of the array is a single value.
+  //have a constant result where I use reduce to accumulate all the genres and their counts
   //reduce will iterate through each book
   const result = books.reduce((result, book) => {
-    //How do we know that the genre exists? We look at results and see if the genre even has a position in the result array
-    //have a variable called foundIndex to contain results from using .findIndex
-    //use result.findIndex to find which index our genres exist in the array
-    //Definition: The findIndex() method returns the index of the first element in an array that satisfies the provided testing function. If no elements satisfy the testing function, -1 is returned.
+    //How do I know that the genre exists? I look at results and see if the genre even has a position in the result array
+    //I have a variable called foundIndex to contain results from using .findIndex
+    //I will use result.findIndex to find which index our genres exist in the array
     let foundIndex = result.findIndex((element) => element.name === book.genre);
-    //if statement will check if name of genre exists and if the index is less than 0(which means it does not exist in arrray)
+    //The if statement will check if name of genre exists and if the index is less than 0(which means it does not exist in arrray)
     if (book.genre && foundIndex < 0) {
-      //add new object into result
+      //Then add new object into result
       result.push({
         name: book.genre,
         count: 1,
       });
-      //if genre exists at index 0 or more (if it exists at any point in the array), then increase the count by 1
+      //If genre exists at index 0 or more (if it exists at any point in the array), then increase the count by 1
     } else if (book.genre && foundIndex >= 0) {
       result[foundIndex].count++;
     }
     return result;
   }, []);
-  return result
-    .sort((genreA, genreB) => genreB.count - genreA.count)
-    .slice(0, 5);
-  //b - a will sort in descending order
+  return (
+    result
+      //will use .sort to put my results in descending order
+      .sort((genreA, genreB) => genreB.count - genreA.count)
+      // .slice will start at index 0 and end before index 5
+      .slice(0, 5)
+  );
 }
-
-/*
-  [
-    { name: "Nonfiction", count: 9 },
-    { name: "Historical Fiction", count: 7 },
-    { name: "Thriller", count: 7 },
-    ...
-  ]
-*/
 
 function getMostPopularBooks(books) {
   const result = books.reduce((result, book) => {
-    //check if genre object exists in result array  by using findIndex()
-    //The findIndex() method returns the index of the first element in an array that satisfies the provided testing function. If no elements satisfy the testing function, -1 is returned.
+    //I used a very similar function to getCommonGenres but now I am looking at title instead of genre
     let foundIndex = result.findIndex((element) => element.name === book.title);
+    //if book title exists and is nowhere in my results
     if (book.title && foundIndex < 0) {
+      //then push this object into result
       result.push({
         name: book.title,
         count: book.borrows.length,
@@ -69,51 +62,31 @@ function getMostPopularBooks(books) {
     .slice(0, 5);
 }
 
-/*
-  [
-    { name: "incididunt nostrud minim", count: 30 },
-    { name: "culpa do sint", count: 30 },
-    { name: "ullamco est minim", count: 29 },
-    ...
-  ]
-*/
-//use reduce
-
 function getMostPopularAuthors(books, authors) {
+  //I want a variable that is an empty array so I can push my results from my function into it
   let results = [];
+  //I chose to loop through author because that is ultimately, what I am returning
   authors.forEach((author) => {
     let authorInfo = {
+      //I made a new object that has the author's full name and the count for how many borrows they have
       name: `${author.name.first} ${author.name.last}`,
       count: 0,
     };
-
+    //now I want to loop through books array
     books.forEach((book) => {
+      //if I find a match
       if (book.authorId === author.id) {
+        //then the count in authorInfo will be increased
         authorInfo.count += book.borrows.length;
       }
     });
+    //push all my results into an array and the loop will start over again
     results.push(authorInfo);
   });
   return results
     .sort((authorA, authorB) => authorB.count - authorA.count)
     .slice(0, 5);
-
-  //foreach
-  //emptyvariable
-  //loop authors
-  //author object created (within, have name and count =0)
-  //then books.foreach will try to match book.authorId === author.id
 }
-
-//use reduce
-/*
-  [
-    { name: "Cristina Buchanan", count: 112 },
-    { name: "Tami Hurst", count: 83 },
-    { name: "Chrystal Lester", count: 80 },
-    ...
-  ]
-*/
 
 module.exports = {
   getTotalBooksCount,
